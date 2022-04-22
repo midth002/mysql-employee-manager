@@ -19,6 +19,8 @@
   },
   "homepage": "https://github.com/midth002/mysql-employee-manager#readme",
   "dependencies": {
+    "dotenv": "^16.0.0",
+    "inquirer": "^8.2.2",
     "mysql2": "^2.3.3"
   }
 }
