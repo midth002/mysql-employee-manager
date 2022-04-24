@@ -1,35 +1,38 @@
-const mysql = require('mysql2');
+
 const cTable = require('console.table');
 const inquirer = require('inquirer');
-require('dotenv').config()
-// Connect to database
-const db = mysql.createConnection(
- {
-host: 'localhost',
-// MySQL username,
-user: 'root',
-password: process.env.MYSQL_PW,
-database: process.env.MYSQL_DB_NAME
-},
-console.log(`Connected to the database.`)
-);
-db.query('SELECT id,first_name FROM students', function (err, results) {
-// console.log(results);
-});
-
-const choices = ['View All Departments', 'View All Roles', 'View All Employees', 'Add Employee', 'Add Role', 'Add Department', 'Update Employee Role', 'Delete Employee', 'Delete Role', 
-'Delete Department']
+const { viewDepts, viewRoles, viewEmployees } = require('./helpers/query.js')
 
 
-function start() {
-    inquirer
-    .prompt([ 
-        {
-           type: 'input',
-           name: 'menu',
-           message: 'What would you like to do?',
-           choices: choices
+const choices = ['View All Departments', 'View All Roles', 'View All Employees', 'Add Employee', 'Add Role', 'Add Department', 'Update Employee Role']
+const menuQuestion = [
+    {
+        type: 'list',
+        name: 'menu',
+        message: 'What would you like to do?',
+        choices: choices,
+     }
+]
+function init() {
+     inquirer
+    .prompt(menuQuestion).then((response) => {
+        console.log(response); 
+    //     switch (response.userview) {
+    //         case choices[0]: viewDepts()
+    //         break;
+
+    //         default: 
+    //         break;
+    //     }
+    })
+     .catch((error) => {
+        if (error.isTtyError) {
+          console.log(error)
+        } else {
+         console.log('Something else is wrong')
         }
-    ])
+      });
 }
+
+init();
 
