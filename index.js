@@ -1,7 +1,9 @@
 
 const cTable = require('console.table');
 const inquirer = require('inquirer');
-const { viewDepts, viewRoles, viewEmployees } = require('./helpers/query.js')
+const { viewDepts, viewRoles, viewEmployees, addDept, getRoles } = require('./helpers/query.js')
+
+
 
 
 const choices = ['View All Departments', 'View All Roles', 'View All Employees', 'Add Employee', 'Add Role', 'Add Department', 'Update Employee Role']
@@ -23,8 +25,14 @@ function init() {
             break;
             case choices[2]: viewEmployees()
             break;
-            
-
+            case choices[5]: addDeptInput()
+            break;
+            case choices[3]: addEmpInput()
+            break;
+            case choices[4]: addRoleInput()
+            break;
+            case choices[6]: updateEmployee()
+            break;
             default: 
             break;
         }
@@ -37,6 +45,79 @@ function init() {
         }
       });
 }
+
+
+function addDeptInput() {
+    inquirer.prompt([ 
+        {
+            type: 'input',
+            name: 'dept',
+            message: 'What is the name of the department'
+        }
+        ]
+    ).then((response) => {
+        console.log('Added department: ' + response.dept);
+        init();
+    })
+}
+
+function addEmpInput() {
+    const rolesArray = ['Software Engineer', 'Accountant', 'Marketing Manager', 'Project Manager', 'Human Resource Manager']
+    inquirer.prompt([ 
+        {
+            type: 'input',
+            name: 'firstName',
+            message: "What is the employee's first name?"
+        },
+        {
+            type: 'input',
+            name: 'lastName',
+            message: "What is the employee's first name?"
+        },
+        {
+            type: 'list',
+            name: 'role',
+            message: "What is the employee's role?",
+            choices: rolesArray
+        },
+
+        ]).then((response) => {
+        console.log(`Added Employee: ${response.firstName} ${response.lastName} 
+        Role: ${response.role}`);
+        init();
+    })
+}
+
+function addRoleInput() {
+    const deptArray = ['Software', 'Accounting', 'Sales', 'Management', 'Customer Relations']
+    inquirer.prompt([ 
+        {
+            type: 'input',
+            name: 'role',
+            message: 'What is the title of the role'
+        }, 
+        {
+            type: 'input',
+            name: 'salary',
+            message: 'What is the base salary for this role'
+        }, 
+        {
+            type: 'list',
+            name: 'deptRole',
+            message: 'What is the department associated with this role',
+            choices: deptArray
+        }
+
+        ]
+    ).then((response) => {
+        console.log(`Added Role:  
+        Title: ${response.role} 
+        Salary: ${response.salary}
+        Department: ${response.deptRole}`);
+        init();
+    })
+}
+
 
 init();
 
