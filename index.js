@@ -17,8 +17,13 @@ function init() {
      inquirer.prompt(menuQuestion).then((response) => {
         console.log(response)
         switch (response.menu) {
-            case 'View All Departments': viewDepts()
+            case choices[0]: viewDepts()
             break;
+            case choices[1]: viewRoles()
+            break;
+            case choices[2]: viewEmployees()
+            break;
+            
 
             default: 
             break;
