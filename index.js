@@ -13,6 +13,5 @@ console.log(`Connected to the database.`)
 );
 db.query('SELECT id,first_name FROM students', function (err, results) {
 // console.log(results);
-
 });
 
