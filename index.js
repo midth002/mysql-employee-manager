@@ -5,7 +5,7 @@ const { viewDepts, viewRoles, viewEmployees, addDept, getRoles } = require('./he
 
 
 
-
+const rolesArray = ['Software Engineer', 'Accountant', 'Marketing Manager', 'Project Manager', 'Human Resource Manager']
 const choices = ['View All Departments', 'View All Roles', 'View All Employees', 'Add Employee', 'Add Role', 'Add Department', 'Update Employee Role']
 const menuQuestion = [
     {
@@ -62,7 +62,7 @@ function addDeptInput() {
 }
 
 function addEmpInput() {
-    const rolesArray = ['Software Engineer', 'Accountant', 'Marketing Manager', 'Project Manager', 'Human Resource Manager']
+   
     inquirer.prompt([ 
         {
             type: 'input',
@@ -114,6 +114,21 @@ function addRoleInput() {
         Title: ${response.role} 
         Salary: ${response.salary}
         Department: ${response.deptRole}`);
+        init();
+    })
+}
+
+function updateEmployee() {
+    inquirer.prompt([ 
+        {
+            type: 'list',
+            name: 'updateRole',
+            message: 'What is the employees new role?',
+            choices: rolesArray
+        }
+        ]
+    ).then((response) => {
+        console.log('Employees role changed to: ' + response.updateRole);
         init();
     })
 }
