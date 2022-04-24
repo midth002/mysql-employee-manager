@@ -8,7 +8,8 @@ const db = mysql.createConnection(
    user: 'root',
    password: process.env.MYSQL_PW,
    database: process.env.MYSQL_DB_NAME
-   }
+   },
+   console.log('connected to database')
    );
   
 

@@ -14,16 +14,15 @@ const menuQuestion = [
      }
 ]
 function init() {
-     inquirer
-    .prompt(menuQuestion).then((response) => {
-        console.log(response); 
-    //     switch (response.userview) {
-    //         case choices[0]: viewDepts()
-    //         break;
+     inquirer.prompt(menuQuestion).then((response) => {
+        console.log(response)
+        switch (response.menu) {
+            case 'View All Departments': viewDepts()
+            break;
 
-    //         default: 
-    //         break;
-    //     }
+            default: 
+            break;
+        }
     })
      .catch((error) => {
         if (error.isTtyError) {
