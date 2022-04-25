@@ -20,6 +20,12 @@ function viewEmployees() {
     })
 }
 
+function getRolesId() {
+    db.query('Select id, title from emp_role', function(err, results) {
+        console.log(results)
+    })
+}
+
 function addDept(dept) {
     let sql = 'INSERT INTO department (dept_name) VALUES ?'
     let value = [dept];
@@ -35,7 +41,7 @@ function getRoles() {
           rolesArray.push(results[i].title);
       }
      console.log(typeof rolesArray);
-     console.log(rolesArray)
+     
     })
 }
 

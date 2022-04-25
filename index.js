@@ -5,7 +5,7 @@ const { viewDepts, viewRoles, viewEmployees, addDept, getRoles } = require('./he
 const db = require('./helpers/connect.js');
 
 
-const rolesArray = ['Software Engineer', 'Accountant', 'Marketing Manager', 'Project Manager', 'Human Resource Manager']
+const rolesArray = [];
 const choices = ['View All Departments', 'View All Roles', 'View All Employees', 'Add Employee', 'Add Role', 'Add Department', 'Update Employee Role']
 const menuQuestion = [
     {
@@ -65,14 +65,21 @@ function addDeptInput() {
             if (err) {
                 console.log(err)
             } 
-            console.log(results)
+            console.log(response.dept + ' added to the department list.');
+            init();
         });
     })
 }
 
 function addEmpInput() {
-   
+    db.query('Select title from emp_role', function(err, results) { 
+     
+        for (i=0; i<results.length; i++) {
+            rolesArray.push(results[i].title);
+        }
+    });
     inquirer.prompt([ 
+    
         {
             type: 'input',
             name: 'firstName',
@@ -81,7 +88,7 @@ function addEmpInput() {
         {
             type: 'input',
             name: 'lastName',
-            message: "What is the employee's first name?"
+            message: "What is the employee's last name?"
         },
         {
             type: 'list',
@@ -89,11 +96,39 @@ function addEmpInput() {
             message: "What is the employee's role?",
             choices: rolesArray
         },
+        {
+            type: 'input',
+            name: 'managerId',
+            messsage: "What is their manager's ID?",
+            default: 'No Manager'
+          
+        }
 
         ]).then((response) => {
-        console.log(`Added Employee: ${response.firstName} ${response.lastName} 
-        Role: ${response.role}`);
-        init();
+            let index;
+            let manager = response.managerId;
+            if (rolesArray.includes(response.role)) {
+                index = rolesArray.indexOf(response.role) + 1; 
+            }
+
+            if (response.managerId === 'No Manager') {
+                manager = null;
+            }
+            console.log(rolesArray)
+            db.query(`INSERT INTO employee SET ?`, {
+                first_name: response.firstName,
+                last_name: response.lastName,
+                role_id: index,
+                manager_id: manager
+            }, function(err, results) {
+                if (err) {
+                    console.log(err)
+                } 
+                console.log(`Added Employee: ${response.firstName} ${response.lastName} 
+                Role: ${response.role} Manager: ${response.managerId}`);
+                init();
+            });
+        
     })
 }
 
