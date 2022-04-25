@@ -1,12 +1,13 @@
 
-const cTable = require('console.table');
+const ct = require('console.table');
 const inquirer = require('inquirer');
 const { viewDepts, viewRoles, viewEmployees, addDept, getRoles } = require('./helpers/query.js')
 const db = require('./helpers/connect.js');
 
 
-const rolesArray = [];
+let rolesArray = [];
 let deptArray = [];
+let employeeList = ['Sarah']
 const choices = ['View All Departments', 'View All Roles', 'View All Employees', 'Add Employee', 'Add Role', 'Add Department', 'Update Employee Role']
 const menuQuestion = [
     {
@@ -16,6 +17,8 @@ const menuQuestion = [
         choices: choices,
      }
 ]
+
+
 function init() {
      inquirer.prompt(menuQuestion).then((response) => {
         console.log(response)
@@ -183,7 +186,28 @@ function addRoleInput() {
 }
 
 function updateEmployee() {
+    
+    db.query('Select title from emp_role', function(err, results) { 
+        for (i=0; i<results.length; i++) {
+            rolesArray.push(results[i].title);
+        }
+    });
+
+    db.query('Select first_name from employee', function(err, results) { 
+        for (i=0; i<results.length; i++) {
+            employeeList.push(results[i].first_name);
+        } 
+    });
+    
+
+   
     inquirer.prompt([ 
+        {
+            type: 'list',
+            name: 'selectEmp',
+            message: 'What employee do you want to change?',
+            choices: employeeList
+        },
         {
             type: 'list',
             name: 'updateRole',
@@ -192,6 +216,9 @@ function updateEmployee() {
         }
         ]
     ).then((response) => {
+
+        db.query('Update employee set role_id = ? Where id = ?')
+
         console.log('Employees role changed to: ' + response.updateRole);
         init();
     })
