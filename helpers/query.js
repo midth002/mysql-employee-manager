@@ -24,7 +24,7 @@ function addDept(dept) {
     let sql = 'INSERT INTO department (dept_name) VALUES ?'
     let value = [dept];
     db.query(sql, [value], function(err, results) {
-        return results;
+        console.log(results);
     });
 }
 

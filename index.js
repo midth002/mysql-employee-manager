@@ -2,7 +2,7 @@
 const cTable = require('console.table');
 const inquirer = require('inquirer');
 const { viewDepts, viewRoles, viewEmployees, addDept, getRoles } = require('./helpers/query.js')
-
+const db = require('./helpers/connect.js');
 
 
 const rolesArray = ['Software Engineer', 'Accountant', 'Marketing Manager', 'Project Manager', 'Human Resource Manager']
@@ -48,6 +48,7 @@ function init() {
 
 
 function addDeptInput() {
+    
     inquirer.prompt([ 
         {
             type: 'input',
@@ -56,8 +57,16 @@ function addDeptInput() {
         }
         ]
     ).then((response) => {
-        console.log('Added department: ' + response.dept);
-        init();
+        console.log(typeof response);
+        // init();
+        db.query(`INSERT INTO department SET ?`, {
+            dept_name: response.dept
+        }, function(err, results) {
+            if (err) {
+                console.log(err)
+            } 
+            console.log(results)
+        });
     })
 }
 
