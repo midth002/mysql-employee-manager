@@ -1,5 +1,5 @@
 const inquirer = require('inquirer');
-const db = require('../helpers/connect');
+const db = require('../config/connect');
 const main = require('../index');
 
 let deptArray = [];

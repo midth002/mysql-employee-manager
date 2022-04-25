@@ -2,7 +2,7 @@
 const ct = require('console.table');
 const inquirer = require('inquirer');
 // const { viewRoles, getRoles, getEmpName } = require('./helpers/query.js')
-const db = require('./helpers/connect.js');
+const db = require('./config/connect.js');
 const { addDeptInput, viewDepts } = require('./prompt/department');
 const {  viewEmployees, addEmpInput, updateEmployee } = require('./prompt/employee')
 const { viewRoles, addRoleInput } = require('./prompt/role')

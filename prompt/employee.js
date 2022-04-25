@@ -1,8 +1,10 @@
 const inquirer = require('inquirer');
-const db = require('../helpers/connect');
+const db = require('../config/connect');
 const main = require('../index');
 
 let rolesArray = [];
+let fullNameArray = [];
+
 
 function viewEmployees() {
     db.query('Select * From employee', function(err, results) {
@@ -10,6 +12,25 @@ function viewEmployees() {
         main.start()
     })
 }
+
+function getEmpName() {
+    db.query('Select first_name from employee', function(err, results){
+        for(i=0; i<results.length; i++) {
+           fullNameArray.push(results[i].first_name);
+        }
+        return fullNameArray;
+    })
+}
+
+function getRoleTitle() {
+    db.query('Select title from emp_role', function(err, results) { 
+        for (i=0; i<results.length; i++) {
+            rolesArray.push(results[i].title);
+        }
+        return rolesArray;
+    });
+}
+
 
 function addEmpInput() {
     db.query('Select title from emp_role', function(err, results) { 
@@ -71,41 +92,47 @@ function addEmpInput() {
     })
 }
 
-
+getEmpName();
+getRoleTitle();
 function updateEmployee() {
     
-    // db.query('Select title from emp_role', function(err, results) { 
-    //     for (i=0; i<results.length; i++) {
-    //         rolesArray.push(results[i].title);
-    //     }
-    // });
-
-    getRoles(roles);
-
-    getEmpName();
-
-   
     inquirer.prompt([ 
         {
             type: 'list',
-            name: 'selectEmp',
-            message: 'What employee do you want to change?',
-            choices: employeeList
+            name: 'employeeName',
+            message: 'What is the department associated with this role',
+            choices: fullNameArray
         },
         {
             type: 'list',
-            name: 'updateRole',
+            name: 'updateEmpRole',
             message: 'What is the employees new role?',
             choices: rolesArray
         }
         ]
     ).then((response) => {
+        let empRoleIndex;
+        let empNameIndex;
+        if (rolesArray.includes(response.updateEmpRole)) {
+            empRoleIndex = rolesArray.indexOf(response.updateEmpRole) + 1; 
+        }
 
-        db.query('Update employee set role_id = ? Where id = ?')
+        if (fullNameArray.includes(response.employeeName)) {
+            empNameIndex = fullNameArray.indexOf(response.employeeName) + 1; 
+        }
 
-        console.log('Employees role changed to: ' + response.updateRole);
-        start();
-    })
+
+        db.query(`Update employee join emp_role on 
+        employee.role_id = emp_role.id set employee.role_id = ? 
+        Where employee.id = ?;`, [empRoleIndex, empNameIndex], 
+        function (err, results) {
+            if (err) {
+                console.log(err)
+            }
+            console.log(`${response.employeeName} role updated!`);
+            main.start()
+        })
+    });
 }
 
 
