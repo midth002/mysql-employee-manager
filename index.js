@@ -10,7 +10,7 @@ const { viewRoles, addRoleInput } = require('./prompt/role')
 
 
 
-const choices = ['View All Departments', 'View All Roles', 'View All Employees', 'Add Employee', 'Add Role', 'Add Department', 'Update Employee Role']
+const choices = ['View All Departments', 'View All Roles', 'View All Employees', 'Add Employee', 'Add Role', 'Add Department', 'Update Employee Role', 'Exit']
 const menuQuestion = [
     {
         type: 'list',
@@ -39,6 +39,8 @@ function start() {
             case choices[6]: updateEmployee()
             break;
             default: 
+            console.table("Goodbye!")
+            db.end();
             break;
         }
        
