@@ -1,9 +1,13 @@
 const inquirer = require('inquirer');
 const db = require('../helpers/connect');
-const main = require('../index')
-const ct = require('console.table');
+const main = require('../index');
 
 
+function viewDepts() {
+    db.query('Select * From department', function(err, results) {
+        console.table(results);
+    })
+}
 
 function addDeptInput() {
     
@@ -30,5 +34,6 @@ function addDeptInput() {
 
 
 module.exports = {
-    addDeptInput
+    addDeptInput,
+    viewDepts
 }
