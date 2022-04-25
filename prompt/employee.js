@@ -37,6 +37,8 @@ function addEmpInput() {
         for (i=0; i<results.length; i++) {
             rolesArray.push(results[i].title);
         }
+
+        fullNameArray.push('No Manager')
     });
     inquirer.prompt([ 
     
@@ -57,35 +59,37 @@ function addEmpInput() {
             choices: rolesArray
         },
         {
-            type: 'input',
-            name: 'managerId',
+            type: 'list',
+            name: 'manager',
             messsage: "What is their manager's ID?",
-            default: 'No Manager'
+            choices: fullNameArray
           
         }
 
         ]).then((response) => {
-            let manageIndex;
-            let manager = response.managerId;
+            let roleIndex;
+            let managerIndex;
             if (rolesArray.includes(response.role)) {
-                manageIndex = rolesArray.indexOf(response.role) + 1; 
+                roleIndex = rolesArray.indexOf(response.role) + 1; 
             }
 
-            if (response.managerId === 'No Manager') {
-                manager = null;
+            if (response.manager === 'No Manager') {
+                managerIndex = null;
+            } else {
+                managerIndex = fullNameArray.indexOf(response.manager) + 1;
             }
 
             db.query(`INSERT INTO employee SET ?`, {
                 first_name: response.firstName,
                 last_name: response.lastName,
-                role_id: manageIndex,
+                role_id: roleIndex,
                 manager_id: manager
             }, function(err, results) {
                 if (err) {
                     console.log(err)
                 } 
                 console.log(`Added Employee: ${response.firstName} ${response.lastName} 
-                Role: ${response.role} Manager: ${response.managerId}`);
+                Role: ${response.role} Manager: ${response.manager}`);
                 main.start();
             });
         
