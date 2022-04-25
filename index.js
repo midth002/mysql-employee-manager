@@ -1,13 +1,13 @@
 
 const ct = require('console.table');
 const inquirer = require('inquirer');
-const { viewDepts, viewRoles, viewEmployees, addDept, getRoles } = require('./helpers/query.js')
+const { viewDepts, viewRoles, viewEmployees, addDept, getRoles, getEmpName } = require('./helpers/query.js')
 const db = require('./helpers/connect.js');
-
+const { addDeptInput } = require('./department/department.js')
 
 let rolesArray = [];
 let deptArray = [];
-let employeeList = ['Sarah']
+
 const choices = ['View All Departments', 'View All Roles', 'View All Employees', 'Add Employee', 'Add Role', 'Add Department', 'Update Employee Role']
 const menuQuestion = [
     {
@@ -19,7 +19,7 @@ const menuQuestion = [
 ]
 
 
-function init() {
+function start() {
      inquirer.prompt(menuQuestion).then((response) => {
         console.log(response)
         switch (response.menu) {
@@ -40,6 +40,7 @@ function init() {
             default: 
             break;
         }
+       
     })
      .catch((error) => {
         if (error.isTtyError) {
@@ -51,29 +52,7 @@ function init() {
 }
 
 
-function addDeptInput() {
-    
-    inquirer.prompt([ 
-        {
-            type: 'input',
-            name: 'dept',
-            message: 'What is the name of the department'
-        }
-        ]
-    ).then((response) => {
-        console.log(typeof response);
-        // init();
-        db.query(`INSERT INTO department SET ?`, {
-            dept_name: response.dept
-        }, function(err, results) {
-            if (err) {
-                console.log(err)
-            } 
-            console.log(response.dept + ' added to the department list.');
-            init();
-        });
-    })
-}
+
 
 function addEmpInput() {
     db.query('Select title from emp_role', function(err, results) { 
@@ -180,25 +159,22 @@ function addRoleInput() {
         Title: ${response.title} 
         Salary: ${response.salary}
         Department: ${response.deptRole}`);
-        init();
+        start();
     })
 }) 
 }
 
 function updateEmployee() {
     
-    db.query('Select title from emp_role', function(err, results) { 
-        for (i=0; i<results.length; i++) {
-            rolesArray.push(results[i].title);
-        }
-    });
+    // db.query('Select title from emp_role', function(err, results) { 
+    //     for (i=0; i<results.length; i++) {
+    //         rolesArray.push(results[i].title);
+    //     }
+    // });
 
-    db.query('Select first_name from employee', function(err, results) { 
-        for (i=0; i<results.length; i++) {
-            employeeList.push(results[i].first_name);
-        } 
-    });
-    
+    getRoles(roles);
+
+    getEmpName();
 
    
     inquirer.prompt([ 
@@ -220,10 +196,11 @@ function updateEmployee() {
         db.query('Update employee set role_id = ? Where id = ?')
 
         console.log('Employees role changed to: ' + response.updateRole);
-        init();
+        start();
     })
 }
 
+exports.start = start;
+start();
 
-init();
 

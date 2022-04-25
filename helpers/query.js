@@ -22,6 +22,14 @@ function viewEmployees() {
 
 function getRolesId() {
     db.query('Select id, title from emp_role', function(err, results) {
+        
+        console.table(results)
+    })
+}
+
+function getEmpName() {
+    db.query('Select first_name, last_name from employee', function(err, results){
+   
         console.table(results)
     })
 }
@@ -34,16 +42,15 @@ function addDept(dept) {
     });
 }
 
-function getRoles() {
+function getRoles(rolesArray) {
     db.query('Select title from emp_role', function(err, results) { 
-     
-      for (i=0; i<results.length; i++) {
-          rolesArray.push(results[i].title);
-      }
-     console.log(typeof rolesArray);
-     
-    })
+        for (i=0; i<results.length; i++) {
+            rolesArray.push(results[i].title);
+        }
+    });
 }
+     
+   
 
 
 module.exports = {
@@ -51,5 +58,6 @@ module.exports = {
     viewRoles,
     viewEmployees,
     addDept,
-    getRoles
+    getRoles,
+    getEmpName
 }
