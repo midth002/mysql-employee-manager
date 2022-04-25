@@ -6,6 +6,7 @@ const db = require('./helpers/connect.js');
 
 
 const rolesArray = [];
+let deptArray = [];
 const choices = ['View All Departments', 'View All Roles', 'View All Employees', 'Add Employee', 'Add Role', 'Add Department', 'Update Employee Role']
 const menuQuestion = [
     {
@@ -73,7 +74,6 @@ function addDeptInput() {
 
 function addEmpInput() {
     db.query('Select title from emp_role', function(err, results) { 
-     
         for (i=0; i<results.length; i++) {
             rolesArray.push(results[i].title);
         }
@@ -105,20 +105,20 @@ function addEmpInput() {
         }
 
         ]).then((response) => {
-            let index;
+            let manageIndex;
             let manager = response.managerId;
             if (rolesArray.includes(response.role)) {
-                index = rolesArray.indexOf(response.role) + 1; 
+                manageIndex = rolesArray.indexOf(response.role) + 1; 
             }
 
             if (response.managerId === 'No Manager') {
                 manager = null;
             }
-            console.log(rolesArray)
+
             db.query(`INSERT INTO employee SET ?`, {
                 first_name: response.firstName,
                 last_name: response.lastName,
-                role_id: index,
+                role_id: manageIndex,
                 manager_id: manager
             }, function(err, results) {
                 if (err) {
@@ -133,11 +133,16 @@ function addEmpInput() {
 }
 
 function addRoleInput() {
-    const deptArray = ['Software', 'Accounting', 'Sales', 'Management', 'Customer Relations']
+    let deptIndex;
+    db.query('Select dept_name from department', function(err, results) { 
+        for (i=0; i<results.length; i++) {
+            deptArray.push(results[i].dept_name);
+        }
+    });
     inquirer.prompt([ 
         {
             type: 'input',
-            name: 'role',
+            name: 'title',
             message: 'What is the title of the role'
         }, 
         {
@@ -154,12 +159,27 @@ function addRoleInput() {
 
         ]
     ).then((response) => {
+
+        if (deptArray.includes(response.deptRole)) {
+            deptIndex = deptArray.indexOf(response.deptRole) + 1; 
+        }
+
+        db.query(`INSERT INTO emp_role SET ?`, {
+            title: response.title,
+            salary: response.salary,
+            department_id: deptIndex,
+            
+        }, function(err, results) {
+            if (err) {
+                console.log(err)
+            } 
         console.log(`Added Role:  
-        Title: ${response.role} 
+        Title: ${response.title} 
         Salary: ${response.salary}
         Department: ${response.deptRole}`);
         init();
     })
+}) 
 }
 
 function updateEmployee() {
