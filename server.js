@@ -7,7 +7,7 @@ const cTable = require('console.table');
 
 
 const choices = ['View All Departments', 'View All Roles', 'View All Employees', 
-'Add Employee', 'Add Role', 'Add Department', 'Update Employee Role', 'Exit']
+'Add Employee', 'Add Role', 'Add Department', 'Update Employee Role', 'View employees by department', 'Exit']
 
 const menuQuestion = [
     {
@@ -49,7 +49,9 @@ function loadMenu() {
             break;
             case choices[6]: updateEmps()
             break;
-            case choices[7]: db.end()
+            case choices[7]: viewEmployeesByDepartment()
+            break;
+            case choices[8]: db.end()
             console.log("Goodbye!")
             break;
             default: console.log("An error has occured. Cannot recognized option.")
@@ -108,8 +110,39 @@ function viewEmployees() {
   })
 }
 
+function viewEmployeesByDepartment() {
 
+  let deptArray = ['All'];
+  
+    db.query('Select dept_name from department', function(err, results) { 
+      for (i=0; i<results.length; i++) {
+          deptArray.push(results[i].dept_name);
+      }
 
+      inquirer.prompt([   
+    {
+        type: 'list',
+        name: 'departmentList',
+        message: "What department would you like to see employees?",
+        choices: deptArray
+    }]).then((response) => {
+      if (response.departmentList == 'All') {
+        db.query(`Select department.dept_name As Department, employee.first_name, employee.last_name, emp_role.salary
+      from department join emp_role on department.id = emp_role.department_id join employee on emp_role.id = employee.role_id`, function(err, results) {
+        console.table(results);
+        loadMenu();
+      })} else {
+      db.query(`Select  department.dept_name As Department, employee.first_name, employee.last_name, emp_role.salary
+      from department join emp_role on department.id = emp_role.department_id join employee on emp_role.id = employee.role_id
+      Where dept_name = ?`, response.departmentList, function(err, results) {
+          console.table(results);
+          loadMenu();
+      })
+    }
+    })
+
+  });
+}
 
 
 async function getRoleTitle() {
@@ -123,13 +156,21 @@ async function getRoleTitle() {
 
 
 async function addEmpInput() {
+  let emps = [];
   db.query('Select title from emp_role', function(err, results) { 
       for (i=0; i<results.length; i++) {
           rolesArray.push(results[i].title);
       }
 
-      fullNameArray.push('No Manager')
-  });
+      
+  db.query('Select first_name, last_name from employee', function(err, results){
+
+    for (i=0; i<results.length; i++) {
+     emps.push(results[i].first_name + ' ' + results[i].last_name);
+  } 
+
+      emps.push('No Manager')
+ 
   inquirer.prompt([ 
   
       {
@@ -152,7 +193,7 @@ async function addEmpInput() {
           type: 'list',
           name: 'manager',
           messsage: "What is their manager's ID?",
-          choices: fullNameArray
+          choices: emps
         
       }
 
@@ -180,10 +221,12 @@ async function addEmpInput() {
               } 
               console.log(`Added Employee: ${response.firstName} ${response.lastName} 
               Role: ${response.role} Manager: ${response.manager}`);
-              loadMenu()
+              loadMenu();
           }); 
       
   })
+});
+});
 }
 
  
@@ -241,6 +284,7 @@ function updateEmployee() {
 });
 }); 
 }
+
 
 let deptArray = [];
 
@@ -336,6 +380,8 @@ const allRoles = async ()=>{
   await updateEmployee();
   //  loadMenu();
  }
+
+ 
 
 
 // exports.loadMenu = loadMenu;

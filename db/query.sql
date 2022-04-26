@@ -35,3 +35,12 @@ Set
 -- Update department 
 Update department
 Set 
+
+Select  department.dept_name As Department, employee.first_name, employee.last_name, emp_role.salary
+from employee join emp_role on employee.role_id = emp_role.id right join department on emp_role.department_id = department.id
+Group by dept_name;
+
+
+Select  department.dept_name As Department, employee.first_name, employee.last_name, emp_role.salary
+from department join emp_role on department.id = emp_role.department_id join employee on emp_role.id = employee.role_id
+Where dept_name = 'Sales';
