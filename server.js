@@ -229,23 +229,32 @@ async function addEmpInput() {
 function updateEmployee() {
   let emps = [];
   // Query for first and last name and combine them into the emps array to have list option
-  db.query('Select first_name, last_name from employee', function(err, results){
+  db.query('Select first_name, last_name, role_id from employee', function(err, results){
+    let employees = results.map(emps => ({
+      id: emps.id,
+      name: `${emps.first_name} ${emps.last_name}`,
+      role_id: emps.role_id
+    }))
 
-    for (i=0; i<results.length; i++) {
-     emps.push(results[i].first_name + ' ' + results[i].last_name);
-  } 
 
-  db.query('Select title from emp_role', function(err, results) { 
-    for (i=0; i<results.length; i++) {
-        rolesArray.push(results[i].title);
-    }
+  //   for (i=0; i<results.length; i++) {
+  //    emps.push(results[i].first_name + ' ' + results[i].last_name);
+  // } 
+
+  db.query('Select id, title from emp_role', function(err, results) {
+    let rolesArray = results.map(role => ({
+      name: role.title,
+      value: role.id
+    })) 
+  
+
 
   inquirer.prompt([ 
       {
           type: 'list',
           name: 'employeeName',
           message: 'What is the employee you want to update',
-          choices: emps
+          choices: employees
       },
       {
           type: 'list',
@@ -256,25 +265,18 @@ function updateEmployee() {
       ]
   ).then((response) => {
     // Grab index value from rolesArray and fullNameArray to use in query statement to get the role_id and employee id
-      let empRoleIndex;
-      let empNameIndex;
-      if (rolesArray.includes(response.updateEmpRole)) {
-          empRoleIndex = rolesArray.indexOf(response.updateEmpRole) + 1; 
-      }
+    console.log(response.updateEmpRole)
+    
+    let nameArray = response.employeeName.split(" "); 
+    
 
-      if (fullNameArray.includes(response.employeeName)) {
-          empNameIndex = fullNameArray.indexOf(response.employeeName) + 1; 
-      }
-
-
-      db.query(`Update employee join emp_role on 
-      employee.role_id = emp_role.id set employee.role_id = ? 
-      Where employee.id = ?;`, [empRoleIndex, empNameIndex], 
+      db.query('Update employee set employee.role_id = ? Where (employee.first_name = ? And employee.last_name = ?)'
+      , [ response.updateEmpRole, nameArray[0], nameArray[1]], 
       function (err, results) {
           if (err) {
               console.log(err)
           }
-          console.log(`${response.employeeName} role updated!`);
+          console.log(`${response.employeeName} role updated to ${response.updateEmpRole}`);
           loadMenu()
       })
   });

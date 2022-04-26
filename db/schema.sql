@@ -30,3 +30,5 @@ CREATE TABLE employee (
 );
 
 Update employee join emp_role on employee.role_id = emp_role.id set employee.role_id = 2 Where employee.id = 5;  
+
+Update employee join emp_role on employee.role_id = emp_role.id set employee.role_id = 
