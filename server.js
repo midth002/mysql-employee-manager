@@ -1,11 +1,8 @@
 const db = require('./connect');
 const inquirer = require('inquirer');
 const cTable = require('console.table');
-// const { addDeptInput, viewDepts } = require('./prompt/department');
-// const { viewEmployees, addEmpInput, updateEmployee } = require('./prompt/employee');
-// const { viewRoles, addRoleInput } = require('./prompt/role');
 
-
+// Main menu choices to select from
 const choices = ['View All Departments', 'View All Roles', 'View All Employees', 
 'Add Employee', 'Add Role', 'Add Department', 'Update Employee Role', 'View employees by department', 'Exit']
 
@@ -18,6 +15,7 @@ const menuQuestion = [
      }
 ]
 
+// Main title of the application
 function title() {
   const topLine = "#================================================#\n";
   const bottomLine = "\#================================================#\n";
@@ -32,8 +30,10 @@ function start() {
     loadMenu();
 };
 
+//  Main Menu for user prompts. 
 function loadMenu() {
   inquirer.prompt(menuQuestion).then((response) => {
+    // Switch statement to see what the user passed then go to that function
         switch (response.menu) {
             case choices[0]: allDepts()
             break;
@@ -70,6 +70,7 @@ start();
 
 
 
+// View all Departments 
 async function viewDepts() {
   db.query('Select * From department', function(err, results) {
        console.table(results);
@@ -77,6 +78,7 @@ async function viewDepts() {
    })
 }
 
+// Add a department by user input
 function addDeptInput() {
    
    inquirer.prompt([ 
@@ -103,13 +105,16 @@ function addDeptInput() {
 let rolesArray = [];
  let fullNameArray = [];
 
+// View all the employees and their title, salary and their manager's id
 function viewEmployees() {
+  // Query for first and last name and combine them into the emps array to have list option
   db.query('Select first_name, last_name, title, salary, manager_id From employee Join emp_role On employee.role_id = emp_role.id', function(err, results) {
       console.table(results);
       loadMenu();
   })
 }
 
+// View Employees by Department names
 function viewEmployeesByDepartment() {
 
   let deptArray = ['All'];
@@ -144,17 +149,7 @@ function viewEmployeesByDepartment() {
   });
 }
 
-
-async function getRoleTitle() {
-    db.query('Select title from emp_role', function(err, results) { 
-        for (i=0; i<results.length; i++) {
-            rolesArray.push(results[i].title);
-        }
-        return rolesArray;
-    });
-}
-
-
+// Add an employee by typing in their name, adding their role, and if they have a manager
 async function addEmpInput() {
   let emps = [];
   db.query('Select title from emp_role', function(err, results) { 
@@ -162,7 +157,7 @@ async function addEmpInput() {
           rolesArray.push(results[i].title);
       }
 
-      
+
   db.query('Select first_name, last_name from employee', function(err, results){
 
     for (i=0; i<results.length; i++) {
@@ -198,6 +193,7 @@ async function addEmpInput() {
       }
 
       ]).then((response) => {
+        // Get indexOf from the roles Array so that number index can go into the query statement
           let roleIndex;
           let managerIndex;
           if (rolesArray.includes(response.role)) {
@@ -229,9 +225,10 @@ async function addEmpInput() {
 });
 }
 
- 
+// Update an employees role by changing their role id
 function updateEmployee() {
   let emps = [];
+  // Query for first and last name and combine them into the emps array to have list option
   db.query('Select first_name, last_name from employee', function(err, results){
 
     for (i=0; i<results.length; i++) {
@@ -258,6 +255,7 @@ function updateEmployee() {
       }
       ]
   ).then((response) => {
+    // Grab index value from rolesArray and fullNameArray to use in query statement to get the role_id and employee id
       let empRoleIndex;
       let empNameIndex;
       if (rolesArray.includes(response.updateEmpRole)) {
@@ -287,7 +285,7 @@ function updateEmployee() {
 
 
 let deptArray = [];
-
+// View all the roles
 function viewRoles() {
     db.query('Select * From emp_role', function(err, results) {
         console.table(results);
@@ -295,6 +293,7 @@ function viewRoles() {
     })
 }
 
+// Add a new role from the user's inpu
 function addRoleInput() {
     let deptIndex;
     db.query('Select dept_name from department', function(err, results) { 
@@ -322,7 +321,7 @@ function addRoleInput() {
 
         ]
     ).then((response) => {
-
+        
         if (deptArray.includes(response.deptRole)) {
             deptIndex = deptArray.indexOf(response.deptRole) + 1; 
         }
