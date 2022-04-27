@@ -172,7 +172,7 @@ async function addEmpInput() {
     }))
 
       employees.push('No Manager')
-      console.log(employees)
+     
  
   inquirer.prompt([ 
   
@@ -208,7 +208,7 @@ async function addEmpInput() {
               roleIndex = rolesArray.indexOf(response.role) + 1; 
           }
 
-          console.log(response.manager);
+          
           let managerArray = response.manager.split(" "); 
           let managerId;
 
@@ -277,7 +277,7 @@ function updateEmployee() {
       ]
   ).then((response) => {
     // Grab index value from rolesArray and fullNameArray to use in query statement to get the role_id and employee id
-    console.log(response.updateEmpRole)
+    
     
     let nameArray = response.employeeName.split(" "); 
     

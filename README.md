@@ -9,18 +9,25 @@
   * [Installation](#installation)
   
   * [Usage](#usage)
+
+  * [Screenshot](#screenshot)
   
   * [Contributing](#contributing)
   
-  * [Tests](#tests)
-
   * [License](#license)
 
   * [Questions](#questions)
 
   ## Description
 
+  The employee manager application is created in node.js and uses mysql backend. Users are able to input new departments, roles, and employees. 
+  You will also be able to view these tables that you have to track employees and their roles and departments. This project uses npm packages like 
+  mysql2, and inquirer to get user input into a relational database. The main menu is controled by a conditional switch statement that manages what the 
+  user selects and what functions to run. Inside these various functions are quieries executing selects and update sql statements to retieve and send information.
+
+  ## Screenshot
   
+  [![screenshot](./images/employee_manager.png)]
   
   ## Installation 
 
@@ -31,19 +38,13 @@
   ```  
   ## Usage
 
-  
+  You will need to run node server.js to run this application. There are some starter code for the sql database in the seeds and schema sql files. 
   
   ## Contributing
 
-  
-  
-  ## Tests
-  
-  To run a test, run the following command: 
+  Fork it to your own repo is you would like to contribute. There is still need for different data to show in tables as well as ways to delete 
+  data.
 
-  ```tests
-   npm run test
-  ```
   ## License
 
   This project is licensed under the MIT license 
