@@ -5,6 +5,7 @@ VALUES ('Sales'),
        ('Software'), 
        ('HR'), 
        ('Accounting'), 
+       ('Management');
       
 
 -- Add Role
@@ -21,13 +22,8 @@ VALUES ('Account Manager', 60000, 1),
 
 -- Add Employee
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
-VALUES ('Sarah', 'Sample', 1, NULL),
-       ('John', 'Doe', 2, 1),
-       ('Larry', 'Lobster', 4, NULL),
-       ('Timmy', 'Turner', 3, 4),
-       ('Gary', 'Scott', 5, NULL),
-       ('Dwight', 'Schrutte', 6, NULL),
-       ('Sam', 'Surly', 7, NULL),
-       ('Jenny', 'Penny', 8, 5),
-       ('Taco', 'Paco', 2, 1),
-       ('Bob', 'Cobb', 2, 1);
+VALUES ('Larry', 'Lobster', 4, NULL),
+       ('Timmy', 'Turner', 3, 1),
+       ('Micheal', 'Scott', 5, NULL),
+       ('Dwight', 'Schrutte', 6, 3);
+   

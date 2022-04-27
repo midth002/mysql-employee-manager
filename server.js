@@ -68,7 +68,7 @@ function loadMenu() {
 
 start();
 
-
+// get manager 
 
 // View all Departments 
 async function viewDepts() {
@@ -151,20 +151,28 @@ function viewEmployeesByDepartment() {
 
 // Add an employee by typing in their name, adding their role, and if they have a manager
 async function addEmpInput() {
-  let emps = [];
+  
   db.query('Select title from emp_role', function(err, results) { 
       for (i=0; i<results.length; i++) {
           rolesArray.push(results[i].title);
       }
 
 
-  db.query('Select first_name, last_name from employee', function(err, results){
+  // db.query('Select first_name, last_name from employee', function(err, results){
 
-    for (i=0; i<results.length; i++) {
-     emps.push(results[i].first_name + ' ' + results[i].last_name);
-  } 
+  //   for (i=0; i<results.length; i++) {
+  //    emps.push(results[i].first_name + ' ' + results[i].last_name);
+  // } 
 
-      emps.push('No Manager')
+  db.query('Select first_name, last_name, role_id from employee', function(err, results){
+    let employees = results.map(emps => ({
+      id: emps.id,
+      name: `${emps.first_name} ${emps.last_name}`,
+      role_id: emps.role_id
+    }))
+
+      employees.push('No Manager')
+      console.log(employees)
  
   inquirer.prompt([ 
   
@@ -188,29 +196,34 @@ async function addEmpInput() {
           type: 'list',
           name: 'manager',
           messsage: "What is their manager's ID?",
-          choices: emps
+          choices: employees
         
       }
 
       ]).then((response) => {
         // Get indexOf from the roles Array so that number index can go into the query statement
           let roleIndex;
-          let managerIndex;
+          // let managerIndex;
           if (rolesArray.includes(response.role)) {
               roleIndex = rolesArray.indexOf(response.role) + 1; 
           }
 
-          if (response.manager === 'No Manager') {
-              managerIndex = null;
-          } else {
-              managerIndex = fullNameArray.indexOf(response.manager) + 1;
-          }
+          console.log(response.manager);
+          let managerArray = response.manager.split(" "); 
+          let managerId;
 
+        
+
+         
+            db.query('Select id from employee where (first_name = ? And last_name = ?)', [managerArray[0], managerArray[1]], function(err, results) {
+              managerId = results[0].id
+            
+      
           db.query(`INSERT INTO employee SET ?`, {
               first_name: response.firstName,
               last_name: response.lastName,
               role_id: roleIndex,
-              manager_id: managerIndex
+              manager_id: managerId
           }, function(err, results) {
               if (err) {
                   console.log(err)
@@ -219,7 +232,7 @@ async function addEmpInput() {
               Role: ${response.role} Manager: ${response.manager}`);
               loadMenu();
           }); 
-      
+        })
   })
 });
 });
@@ -227,11 +240,10 @@ async function addEmpInput() {
 
 // Update an employees role by changing their role id
 function updateEmployee() {
-  let emps = [];
-  // Query for first and last name and combine them into the emps array to have list option
-  db.query('Select first_name, last_name, role_id from employee', function(err, results){
+ 
+  // Query for first, last, and role it and combine them into the emps array to have list option
+  db.query('Select id, first_name, last_name, role_id from employee', function(err, results){
     let employees = results.map(emps => ({
-      id: emps.id,
       name: `${emps.first_name} ${emps.last_name}`,
       role_id: emps.role_id
     }))
